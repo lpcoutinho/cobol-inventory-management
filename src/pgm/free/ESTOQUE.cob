@@ -109,10 +109,14 @@
                    DISPLAY "DADOS DO PRODUTO SELECIONADO" LINE 04 COLUMN 20 HIGHLIGHT
                    MOVE PROD-PRECO TO WS-MASK-PRECO
                    MOVE PROD-QTD   TO WS-MASK-QTD
-                   DISPLAY "ID    : " PROD-ID       LINE 06 COLUMN 20
-                   DISPLAY "NOME  : " PROD-NOME     LINE 07 COLUMN 20
-                   DISPLAY "QTD   : " WS-MASK-QTD   LINE 08 COLUMN 20
-                   DISPLAY "PRECO : R$ " WS-MASK-PRECO LINE 09 COLUMN 20
+                   DISPLAY "ID    : " LINE 06 COLUMN 20
+                   DISPLAY PROD-ID       LINE 06 COLUMN 28
+                   DISPLAY "NOME  : " LINE 07 COLUMN 20
+                   DISPLAY PROD-NOME     LINE 07 COLUMN 28
+                   DISPLAY "QTD   : " LINE 08 COLUMN 20
+                   DISPLAY WS-MASK-QTD   LINE 08 COLUMN 28
+                   DISPLAY "PRECO : R$" LINE 09 COLUMN 20
+                   DISPLAY WS-MASK-PRECO LINE 09 COLUMN 30
            END-READ.
            DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 11 COLUMN 20.
            ACCEPT WS-OPCAO.
@@ -131,10 +135,15 @@
                    DISPLAY "ALTERACAO DE PRODUTO" LINE 02 COLUMN 25
                    MOVE PROD-PRECO TO WS-MASK-PRECO
                    MOVE PROD-QTD   TO WS-MASK-QTD
-                   DISPLAY "ID SELECIONADO: " PROD-ID LINE 04 COLUMN 20 HIGHLIGHT
-                   DISPLAY "NOME ATUAL : " PROD-NOME LINE 06 COLUMN 20
-                   DISPLAY "PRECO ATUAL: R$ " WS-MASK-PRECO LINE 07 COLUMN 20
-                   DISPLAY "QTD ATUAL  : " WS-MASK-QTD LINE 08 COLUMN 20
+                   DISPLAY "ID SELECIONADO: " LINE 04 COLUMN 20 HIGHLIGHT
+                   DISPLAY PROD-ID LINE 04 COLUMN 36 HIGHLIGHT
+                   
+                   DISPLAY "NOME ATUAL : " LINE 06 COLUMN 20
+                   DISPLAY PROD-NOME     LINE 06 COLUMN 35
+                   DISPLAY "PRECO ATUAL: R$ " LINE 07 COLUMN 20
+                   DISPLAY WS-MASK-PRECO LINE 07 COLUMN 35
+                   DISPLAY "QTD ATUAL  : " LINE 08 COLUMN 20
+                   DISPLAY WS-MASK-QTD   LINE 08 COLUMN 35
                    
                    DISPLAY "NOVO NOME  : " LINE 10 COLUMN 20
                    ACCEPT PROD-NOME LINE 10 COLUMN 35
@@ -167,10 +176,15 @@
                    DISPLAY "EXCLUSAO DE PRODUTO" LINE 02 COLUMN 25
                    MOVE PROD-PRECO TO WS-MASK-PRECO
                    MOVE PROD-QTD   TO WS-MASK-QTD
-                   DISPLAY "ID SELECIONADO: " PROD-ID LINE 04 COLUMN 20 HIGHLIGHT
-                   DISPLAY "PRODUTO: " PROD-NOME LINE 06 COLUMN 20
-                   DISPLAY "ESTOQUE: " WS-MASK-QTD LINE 07 COLUMN 20
-                   DISPLAY "VALOR  : R$ " WS-MASK-PRECO LINE 08 COLUMN 20
+                   DISPLAY "ID SELECIONADO: " LINE 04 COLUMN 20 HIGHLIGHT
+                   DISPLAY PROD-ID LINE 04 COLUMN 36 HIGHLIGHT
+                   
+                   DISPLAY "PRODUTO: " LINE 06 COLUMN 20
+                   DISPLAY PROD-NOME LINE 06 COLUMN 28
+                   DISPLAY "ESTOQUE: " LINE 07 COLUMN 20
+                   DISPLAY WS-MASK-QTD LINE 07 COLUMN 28
+                   DISPLAY "VALOR  : R$ " LINE 08 COLUMN 20
+                   DISPLAY WS-MASK-PRECO LINE 08 COLUMN 32
                    
                    DISPLAY "CONFIRMA EXCLUSAO? (S/N): " LINE 10 COLUMN 20
                    ACCEPT WS-CONFIRMA LINE 10 COLUMN 46
