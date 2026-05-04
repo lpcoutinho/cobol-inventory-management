@@ -20,8 +20,8 @@
        WORKING-STORAGE SECTION.
        01  WS-FS-ESTOQUE     PIC X(02).
        01  WS-OPCAO          PIC X(01).
+       01  WS-CONFIRMA       PIC X(01).
        01  WS-FIM            PIC X(01) VALUE 'N'.
-       01  WS-MSG            PIC X(50).
 
        SCREEN SECTION.
        01 TELA-LIMPA.
@@ -56,6 +56,8 @@
                EVALUATE WS-OPCAO
                    WHEN '1' PERFORM CADASTRAR-PRODUTO
                    WHEN '2' PERFORM CONSULTAR-PRODUTO
+                   WHEN '3' PERFORM ALTERAR-PRODUTO
+                   WHEN '4' PERFORM EXCLUIR-PRODUTO
                    WHEN '0' MOVE 'S' TO WS-FIM
                END-EVALUATE
            END-PERFORM.
@@ -81,7 +83,7 @@
                NOT INVALID KEY
                    DISPLAY "SUCESSO: PRODUTO SALVO!" LINE 09 COLUMN 20
            END-WRITE.
-           DISPLAY "PRESSIONE QUALQUER TECLA..." LINE 11 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 11 COLUMN 20.
            ACCEPT WS-OPCAO.
 
        CONSULTAR-PRODUTO.
@@ -98,5 +100,61 @@
                    DISPLAY "QTD   : " PROD-QTD  LINE 07 COLUMN 20
                    DISPLAY "PRECO : " PROD-PRECO LINE 08 COLUMN 20
            END-READ.
-           DISPLAY "PRESSIONE QUALQUER TECLA..." LINE 10 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 10 COLUMN 20.
+           ACCEPT WS-OPCAO.
+
+       ALTERAR-PRODUTO.
+           DISPLAY TELA-LIMPA.
+           DISPLAY "ALTERACAO DE PRODUTO" LINE 02 COLUMN 25.
+           DISPLAY "DIGITE O ID: " LINE 04 COLUMN 20.
+           ACCEPT PROD-ID LINE 04 COLUMN 35.
+
+           READ ARQ-ESTOQUE
+               INVALID KEY
+                   DISPLAY "PRODUTO NAO ENCONTRADO!" LINE 06 COLUMN 20
+               NOT INVALID KEY
+                   DISPLAY "NOME ATUAL: " PROD-NOME LINE 06 COLUMN 20
+                   DISPLAY "NOVO NOME : " LINE 07 COLUMN 20
+                   ACCEPT PROD-NOME LINE 07 COLUMN 32
+                   DISPLAY "NOVA QTD  : " LINE 08 COLUMN 20
+                   ACCEPT PROD-QTD LINE 08 COLUMN 32
+                   DISPLAY "NOVO PRECO: " LINE 09 COLUMN 20
+                   ACCEPT PROD-PRECO LINE 09 COLUMN 32
+                   
+                   REWRITE REG-PRODUTO
+                       INVALID KEY
+                           DISPLAY "ERRO AO ATUALIZAR!" LINE 11 COLUMN 20
+                       NOT INVALID KEY
+                           DISPLAY "PRODUTO ATUALIZADO COM SUCESSO!" LINE 11 COLUMN 20
+                   END-REWRITE
+           END-READ.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 13 COLUMN 20.
+           ACCEPT WS-OPCAO.
+
+       EXCLUIR-PRODUTO.
+           DISPLAY TELA-LIMPA.
+           DISPLAY "EXCLUSAO DE PRODUTO" LINE 02 COLUMN 25.
+           DISPLAY "DIGITE O ID: " LINE 04 COLUMN 20.
+           ACCEPT PROD-ID LINE 04 COLUMN 35.
+
+           READ ARQ-ESTOQUE
+               INVALID KEY
+                   DISPLAY "PRODUTO NAO ENCONTRADO!" LINE 06 COLUMN 20
+               NOT INVALID KEY
+                   DISPLAY "NOME: " PROD-NOME LINE 06 COLUMN 20
+                   DISPLAY "CONFIRMA EXCLUSAO? (S/N): " LINE 08 COLUMN 20
+                   ACCEPT WS-CONFIRMA LINE 08 COLUMN 46
+                   
+                   IF WS-CONFIRMA = 'S' OR WS-CONFIRMA = 's'
+                       DELETE ARQ-ESTOQUE RECORD
+                           INVALID KEY
+                               DISPLAY "ERRO AO EXCLUIR!" LINE 10 COLUMN 20
+                           NOT INVALID KEY
+                               DISPLAY "PRODUTO EXCLUIDO COM SUCESSO!" LINE 10 COLUMN 20
+                       END-DELETE
+                   ELSE
+                       DISPLAY "EXCLUSAO CANCELADA." LINE 10 COLUMN 20
+                   END-IF
+           END-READ.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 12 COLUMN 20.
            ACCEPT WS-OPCAO.
