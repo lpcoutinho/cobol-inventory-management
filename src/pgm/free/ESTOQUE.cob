@@ -4,6 +4,10 @@
        AUTHOR. LPCOUTINHO.
 
        ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT ARQ-ESTOQUE ASSIGN TO 'data/ESTOQUE.dat'
@@ -22,6 +26,10 @@
        01  WS-OPCAO          PIC X(01).
        01  WS-CONFIRMA       PIC X(01).
        01  WS-FIM            PIC X(01) VALUE 'N'.
+       
+       01  WS-MASKS.
+           05 WS-MASK-PRECO  PIC ZZZ.ZZ9,99.
+           05 WS-MASK-QTD    PIC ZZZ9.
 
        SCREEN SECTION.
        01 TELA-LIMPA.
@@ -96,11 +104,17 @@
                INVALID KEY
                    DISPLAY "PRODUTO NAO ENCONTRADO!" LINE 06 COLUMN 20
                NOT INVALID KEY
-                   DISPLAY "NOME  : " PROD-NOME LINE 06 COLUMN 20
-                   DISPLAY "QTD   : " PROD-QTD  LINE 07 COLUMN 20
-                   DISPLAY "PRECO : " PROD-PRECO LINE 08 COLUMN 20
+                   DISPLAY TELA-LIMPA
+                   DISPLAY "CONSULTA DE PRODUTO" LINE 02 COLUMN 25
+                   DISPLAY "DADOS DO PRODUTO SELECIONADO" LINE 04 COLUMN 20 HIGHLIGHT
+                   MOVE PROD-PRECO TO WS-MASK-PRECO
+                   MOVE PROD-QTD   TO WS-MASK-QTD
+                   DISPLAY "ID    : " PROD-ID       LINE 06 COLUMN 20
+                   DISPLAY "NOME  : " PROD-NOME     LINE 07 COLUMN 20
+                   DISPLAY "QTD   : " WS-MASK-QTD   LINE 08 COLUMN 20
+                   DISPLAY "PRECO : R$ " WS-MASK-PRECO LINE 09 COLUMN 20
            END-READ.
-           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 10 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 11 COLUMN 20.
            ACCEPT WS-OPCAO.
 
        ALTERAR-PRODUTO.
@@ -113,22 +127,30 @@
                INVALID KEY
                    DISPLAY "PRODUTO NAO ENCONTRADO!" LINE 06 COLUMN 20
                NOT INVALID KEY
-                   DISPLAY "NOME ATUAL: " PROD-NOME LINE 06 COLUMN 20
-                   DISPLAY "NOVO NOME : " LINE 07 COLUMN 20
-                   ACCEPT PROD-NOME LINE 07 COLUMN 32
-                   DISPLAY "NOVA QTD  : " LINE 08 COLUMN 20
-                   ACCEPT PROD-QTD LINE 08 COLUMN 32
-                   DISPLAY "NOVO PRECO: " LINE 09 COLUMN 20
-                   ACCEPT PROD-PRECO LINE 09 COLUMN 32
+                   DISPLAY TELA-LIMPA
+                   DISPLAY "ALTERACAO DE PRODUTO" LINE 02 COLUMN 25
+                   MOVE PROD-PRECO TO WS-MASK-PRECO
+                   MOVE PROD-QTD   TO WS-MASK-QTD
+                   DISPLAY "ID SELECIONADO: " PROD-ID LINE 04 COLUMN 20 HIGHLIGHT
+                   DISPLAY "NOME ATUAL : " PROD-NOME LINE 06 COLUMN 20
+                   DISPLAY "PRECO ATUAL: R$ " WS-MASK-PRECO LINE 07 COLUMN 20
+                   DISPLAY "QTD ATUAL  : " WS-MASK-QTD LINE 08 COLUMN 20
+                   
+                   DISPLAY "NOVO NOME  : " LINE 10 COLUMN 20
+                   ACCEPT PROD-NOME LINE 10 COLUMN 35
+                   DISPLAY "NOVA QTD   : " LINE 11 COLUMN 20
+                   ACCEPT PROD-QTD LINE 11 COLUMN 35
+                   DISPLAY "NOVO PRECO : " LINE 12 COLUMN 20
+                   ACCEPT PROD-PRECO LINE 12 COLUMN 35
                    
                    REWRITE REG-PRODUTO
                        INVALID KEY
-                           DISPLAY "ERRO AO ATUALIZAR!" LINE 11 COLUMN 20
+                           DISPLAY "ERRO AO ATUALIZAR!" LINE 14 COLUMN 20
                        NOT INVALID KEY
-                           DISPLAY "PRODUTO ATUALIZADO COM SUCESSO!" LINE 11 COLUMN 20
+                           DISPLAY "PRODUTO ATUALIZADO COM SUCESSO!" LINE 14 COLUMN 20
                    END-REWRITE
            END-READ.
-           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 13 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 16 COLUMN 20.
            ACCEPT WS-OPCAO.
 
        EXCLUIR-PRODUTO.
@@ -141,20 +163,28 @@
                INVALID KEY
                    DISPLAY "PRODUTO NAO ENCONTRADO!" LINE 06 COLUMN 20
                NOT INVALID KEY
-                   DISPLAY "NOME: " PROD-NOME LINE 06 COLUMN 20
-                   DISPLAY "CONFIRMA EXCLUSAO? (S/N): " LINE 08 COLUMN 20
-                   ACCEPT WS-CONFIRMA LINE 08 COLUMN 46
+                   DISPLAY TELA-LIMPA
+                   DISPLAY "EXCLUSAO DE PRODUTO" LINE 02 COLUMN 25
+                   MOVE PROD-PRECO TO WS-MASK-PRECO
+                   MOVE PROD-QTD   TO WS-MASK-QTD
+                   DISPLAY "ID SELECIONADO: " PROD-ID LINE 04 COLUMN 20 HIGHLIGHT
+                   DISPLAY "PRODUTO: " PROD-NOME LINE 06 COLUMN 20
+                   DISPLAY "ESTOQUE: " WS-MASK-QTD LINE 07 COLUMN 20
+                   DISPLAY "VALOR  : R$ " WS-MASK-PRECO LINE 08 COLUMN 20
+                   
+                   DISPLAY "CONFIRMA EXCLUSAO? (S/N): " LINE 10 COLUMN 20
+                   ACCEPT WS-CONFIRMA LINE 10 COLUMN 46
                    
                    IF WS-CONFIRMA = 'S' OR WS-CONFIRMA = 's'
                        DELETE ARQ-ESTOQUE RECORD
                            INVALID KEY
-                               DISPLAY "ERRO AO EXCLUIR!" LINE 10 COLUMN 20
+                               DISPLAY "ERRO AO EXCLUIR!" LINE 12 COLUMN 20
                            NOT INVALID KEY
-                               DISPLAY "PRODUTO EXCLUIDO COM SUCESSO!" LINE 10 COLUMN 20
+                               DISPLAY "PRODUTO EXCLUIDO COM SUCESSO!" LINE 12 COLUMN 20
                        END-DELETE
                    ELSE
-                       DISPLAY "EXCLUSAO CANCELADA." LINE 10 COLUMN 20
+                       DISPLAY "EXCLUSAO CANCELADA." LINE 12 COLUMN 20
                    END-IF
            END-READ.
-           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 12 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 14 COLUMN 20.
            ACCEPT WS-OPCAO.
