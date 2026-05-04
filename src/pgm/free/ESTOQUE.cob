@@ -26,6 +26,8 @@
        01  WS-OPCAO          PIC X(01).
        01  WS-CONFIRMA       PIC X(01).
        01  WS-FIM            PIC X(01) VALUE 'N'.
+       01  WS-FIM-REL        PIC X(01) VALUE 'N'.
+       01  WS-LINHA          PIC 9(02).
        
        01  WS-MASKS.
            05 WS-MASK-PRECO  PIC ZZZ.ZZ9,99.
@@ -66,6 +68,7 @@
                    WHEN '2' PERFORM CONSULTAR-PRODUTO
                    WHEN '3' PERFORM ALTERAR-PRODUTO
                    WHEN '4' PERFORM EXCLUIR-PRODUTO
+                   WHEN '5' PERFORM RELATORIO-GERAL
                    WHEN '0' MOVE 'S' TO WS-FIM
                END-EVALUATE
            END-PERFORM.
@@ -115,8 +118,8 @@
                    DISPLAY PROD-NOME     LINE 07 COLUMN 28
                    DISPLAY "QTD   : " LINE 08 COLUMN 20
                    DISPLAY WS-MASK-QTD   LINE 08 COLUMN 28
-                   DISPLAY "PRECO : R$" LINE 09 COLUMN 20
-                   DISPLAY WS-MASK-PRECO LINE 09 COLUMN 30
+                   DISPLAY "PRECO : R$ " LINE 09 COLUMN 20
+                   DISPLAY WS-MASK-PRECO LINE 09 COLUMN 32
            END-READ.
            DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 11 COLUMN 20.
            ACCEPT WS-OPCAO.
@@ -201,4 +204,52 @@
                    END-IF
            END-READ.
            DISPLAY "PRESSIONE QUALQUER TECLA PARA VOLTAR..." LINE 14 COLUMN 20.
+           ACCEPT WS-OPCAO.
+
+       RELATORIO-GERAL.
+           DISPLAY TELA-LIMPA.
+           DISPLAY "RELATORIO GERAL DE ESTOQUE" LINE 02 COLUMN 25 HIGHLIGHT.
+           DISPLAY "ID    | NOME                           | QTD  | PRECO" LINE 04 COLUMN 10.
+           DISPLAY "------------------------------------------------------" LINE 05 COLUMN 10.
+           
+           MOVE 0 TO PROD-ID.
+           START ARQ-ESTOQUE KEY IS NOT LESS PROD-ID
+               INVALID KEY
+                   DISPLAY "ARQUIVO VAZIO!" LINE 07 COLUMN 10
+                   MOVE 'S' TO WS-FIM-REL
+               NOT INVALID KEY
+                   MOVE 'N' TO WS-FIM-REL
+                   MOVE 6 TO WS-LINHA
+           END-START.
+
+           PERFORM UNTIL WS-FIM-REL = 'S'
+               READ ARQ-ESTOQUE NEXT
+                   AT END
+                       MOVE 'S' TO WS-FIM-REL
+                   NOT AT END
+                       MOVE PROD-PRECO TO WS-MASK-PRECO
+                       MOVE PROD-QTD   TO WS-MASK-QTD
+                       DISPLAY PROD-ID       LINE WS-LINHA COLUMN 10
+                       DISPLAY "|"           LINE WS-LINHA COLUMN 16
+                       DISPLAY PROD-NOME     LINE WS-LINHA COLUMN 18
+                       DISPLAY "|"           LINE WS-LINHA COLUMN 49
+                       DISPLAY WS-MASK-QTD   LINE WS-LINHA COLUMN 51
+                       DISPLAY "|"           LINE WS-LINHA COLUMN 56
+                       DISPLAY WS-MASK-PRECO LINE WS-LINHA COLUMN 58
+                       
+                       ADD 1 TO WS-LINHA
+                       
+                       IF WS-LINHA > 20
+                           DISPLAY "PRESSIONE ENTER PARA PROXIMA PAGINA..." LINE 22 COLUMN 10
+                           ACCEPT WS-OPCAO
+                           DISPLAY TELA-LIMPA
+                           DISPLAY "RELATORIO GERAL DE ESTOQUE (CONT.)" LINE 02 COLUMN 25 HIGHLIGHT
+                           DISPLAY "ID    | NOME                           | QTD  | PRECO" LINE 04 COLUMN 10
+                           DISPLAY "------------------------------------------------------" LINE 05 COLUMN 10
+                           MOVE 6 TO WS-LINHA
+                       END-IF
+               END-READ
+           END-PERFORM.
+
+           DISPLAY "FIM DO RELATORIO. PRESSIONE QUALQUER TECLA..." LINE WS-LINHA COLUMN 10.
            ACCEPT WS-OPCAO.
