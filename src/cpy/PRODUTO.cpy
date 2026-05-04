@@ -1,4 +1,3 @@
-      * Layout do Registro de Produto (Indexed File)
        01 REG-PRODUTO.
           05 PROD-ID        PIC 9(05).
           05 PROD-NOME      PIC X(30).

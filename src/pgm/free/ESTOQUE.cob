@@ -15,7 +15,7 @@
        DATA DIVISION.
        FILE SECTION.
        FD  ARQ-ESTOQUE.
-       COPY 'PRODUTO.cpy'.
+           COPY 'PRODUTO.cpy'.
 
        WORKING-STORAGE SECTION.
        01  WS-FS-ESTOQUE     PIC X(02).
@@ -41,7 +41,7 @@
 
        PROCEDURE DIVISION.
        MAIN-LOGIC.
-           OPEN I-O ARQ-ESTOQUE
+           OPEN I-O ARQ-ESTOQUE.
            IF WS-FS-ESTOQUE = '35'
                OPEN OUTPUT ARQ-ESTOQUE
                CLOSE ARQ-ESTOQUE
@@ -81,7 +81,8 @@
                NOT INVALID KEY
                    DISPLAY "SUCESSO: PRODUTO SALVO!" LINE 09 COLUMN 20
            END-WRITE.
-           ACCEPT WS-OPCAO LINE 11 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA..." LINE 11 COLUMN 20.
+           ACCEPT WS-OPCAO.
 
        CONSULTAR-PRODUTO.
            DISPLAY TELA-LIMPA.
@@ -97,4 +98,5 @@
                    DISPLAY "QTD   : " PROD-QTD  LINE 07 COLUMN 20
                    DISPLAY "PRECO : " PROD-PRECO LINE 08 COLUMN 20
            END-READ.
-           ACCEPT WS-OPCAO LINE 10 COLUMN 20.
+           DISPLAY "PRESSIONE QUALQUER TECLA..." LINE 10 COLUMN 20.
+           ACCEPT WS-OPCAO.
