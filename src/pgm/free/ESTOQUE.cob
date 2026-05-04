@@ -1,0 +1,103 @@
+      *>>SOURCE FORMAT IS FREE
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. ESTOQUE-SISTEMA.
+       AUTHOR. LPCOUTINHO.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ARQ-ESTOQUE ASSIGN TO 'data/ESTOQUE.dat'
+           ORGANIZATION IS INDEXED
+           ACCESS MODE IS DYNAMIC
+           RECORD KEY IS PROD-ID
+           FILE STATUS IS WS-FS-ESTOQUE.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  ARQ-ESTOQUE.
+       COPY 'PRODUTO.cpy'.
+
+       WORKING-STORAGE SECTION.
+       01  WS-FS-ESTOQUE     PIC X(02).
+       01  WS-OPCAO          PIC X(01).
+       01  WS-FIM            PIC X(01) VALUE 'N'.
+       01  WS-MSG            PIC X(50).
+
+       SCREEN SECTION.
+       01 TELA-LIMPA.
+          05 BLANK SCREEN.
+
+       01 TELA-MENU.
+          05 LINE 02 COLUMN 20 VALUE "SISTEMA DE GESTAO DE ESTOQUE" HIGHLIGHT.
+          05 LINE 03 COLUMN 20 VALUE "----------------------------".
+          05 LINE 05 COLUMN 25 VALUE "1. CADASTRAR PRODUTO".
+          05 LINE 06 COLUMN 25 VALUE "2. CONSULTAR PRODUTO".
+          05 LINE 07 COLUMN 25 VALUE "3. ALTERAR ESTOQUE".
+          05 LINE 08 COLUMN 25 VALUE "4. EXCLUIR PRODUTO".
+          05 LINE 09 COLUMN 25 VALUE "5. RELATORIO GERAL".
+          05 LINE 11 COLUMN 25 VALUE "0. SAIR".
+          05 LINE 13 COLUMN 25 VALUE "OPCAO: ".
+          05 COLUMN PLUS 1 PIC X(01) TO WS-OPCAO.
+
+       PROCEDURE DIVISION.
+       MAIN-LOGIC.
+           OPEN I-O ARQ-ESTOQUE
+           IF WS-FS-ESTOQUE = '35' *> Arquivo nao existe, criar um novo
+               OPEN OUTPUT ARQ-ESTOQUE
+               CLOSE ARQ-ESTOQUE
+               OPEN I-O ARQ-ESTOQUE
+           END-IF.
+
+           PERFORM UNTIL WS-FIM = 'S'
+               DISPLAY TELA-LIMPA
+               DISPLAY TELA-MENU
+               ACCEPT TELA-MENU
+               
+               EVALUATE WS-OPCAO
+                   WHEN '1' PERFORM CADASTRAR-PRODUTO
+                   WHEN '2' PERFORM CONSULTAR-PRODUTO
+                   WHEN '0' MOVE 'S' TO WS-FIM
+                   WHEN OTHER 
+                       DISPLAY "OPCAO INVALIDA!" LINE 15 COLUMN 25
+                       ACCEPT WS-OPCAO
+               END-EVALUATE
+           END-PERFORM.
+
+           CLOSE ARQ-ESTOQUE.
+           STOP RUN.
+
+       CADASTRAR-PRODUTO.
+           DISPLAY TELA-LIMPA.
+           DISPLAY "CADASTRO DE PRODUTO" LINE 02 COLUMN 25.
+           DISPLAY "ID    : " LINE 04 COLUMN 20.
+           ACCEPT PROD-ID LINE 04 COLUMN 28.
+           DISPLAY "NOME  : " LINE 05 COLUMN 20.
+           ACCEPT PROD-NOME LINE 05 COLUMN 28.
+           DISPLAY "QTD   : " LINE 06 COLUMN 20.
+           ACCEPT PROD-QTD LINE 06 COLUMN 28.
+           DISPLAY "PRECO : " LINE 07 COLUMN 20.
+           ACCEPT PROD-PRECO LINE 07 COLUMN 28.
+
+           WRITE REG-PRODUTO
+               INVALID KEY 
+                   DISPLAY "ERRO: ID JA CADASTRADO!" LINE 09 COLUMN 20
+               NOT INVALID KEY
+                   DISPLAY "SUCESSO: PRODUTO SALVO!" LINE 09 COLUMN 20
+           END-WRITE.
+           ACCEPT WS-OPCAO LINE 11 COLUMN 20.
+
+       CONSULTAR-PRODUTO.
+           DISPLAY TELA-LIMPA.
+           DISPLAY "CONSULTA DE PRODUTO" LINE 02 COLUMN 25.
+           DISPLAY "DIGITE O ID: " LINE 04 COLUMN 20.
+           ACCEPT PROD-ID LINE 04 COLUMN 35.
+
+           READ ARQ-ESTOQUE 
+               INVALID KEY
+                   DISPLAY "PRODUTO NAO ENCONTRADO!" LINE 06 COLUMN 20
+               NOT INVALID KEY
+                   DISPLAY "NOME  : " PROD-NOME LINE 06 COLUMN 20
+                   DISPLAY "QTD   : " PROD-QTD  LINE 07 COLUMN 20
+                   DISPLAY "PRECO : " PROD-PRECO LINE 08 COLUMN 20
+           END-READ.
+           ACCEPT WS-OPCAO LINE 10 COLUMN 20.
