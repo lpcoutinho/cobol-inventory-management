@@ -42,7 +42,7 @@
        PROCEDURE DIVISION.
        MAIN-LOGIC.
            OPEN I-O ARQ-ESTOQUE
-           IF WS-FS-ESTOQUE = '35' *> Arquivo nao existe, criar um novo
+           IF WS-FS-ESTOQUE = '35'
                OPEN OUTPUT ARQ-ESTOQUE
                CLOSE ARQ-ESTOQUE
                OPEN I-O ARQ-ESTOQUE
@@ -57,9 +57,6 @@
                    WHEN '1' PERFORM CADASTRAR-PRODUTO
                    WHEN '2' PERFORM CONSULTAR-PRODUTO
                    WHEN '0' MOVE 'S' TO WS-FIM
-                   WHEN OTHER 
-                       DISPLAY "OPCAO INVALIDA!" LINE 15 COLUMN 25
-                       ACCEPT WS-OPCAO
                END-EVALUATE
            END-PERFORM.
 
